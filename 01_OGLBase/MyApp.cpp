@@ -196,6 +196,10 @@ void CMyApp::InitShaders()
 	);
 }
 
+void CMyApp::InitFloor() {
+
+}
+
 bool CMyApp::Init()
 {
 	// törlési szín legyen kékes
@@ -207,10 +211,12 @@ bool CMyApp::Init()
 	InitShaders();
 	InitCube();
 	InitSkyBox();
+	InitFloor();
 
 	// egyéb textúrák betöltése
 	m_woodTexture.FromFile("assets/wood.jpg");
 	m_suzanneTexture.FromFile("assets/marron.jpg");
+	m_savannaTexture.FromFile("assets/savanna.jpg");
 
 	// mesh betöltése
 	m_mesh = std::unique_ptr<Mesh>(ObjParser::parse("assets/Suzanne.obj"));
@@ -242,6 +248,9 @@ void CMyApp::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 viewProj = m_camera.GetViewProj();
+
+	// Talaj
+
 
 	//Suzanne
 	glm::mat4 suzanneWorld = glm::mat4(1.0f);
