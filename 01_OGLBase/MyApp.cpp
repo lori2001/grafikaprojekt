@@ -205,7 +205,7 @@ void CMyApp::InitShaders()
 	});
 
 	m_program.LinkProgram();
-
+	/*
 	// shader program rövid létrehozása, egyetlen függvényhívással a fenti három:
 	m_programSkybox.Init(
 		{
@@ -216,6 +216,7 @@ void CMyApp::InitShaders()
 			{ 0, "vs_in_pos" },				// VAO 0-as csatorna menjen a vs_in_pos-ba
 		}
 	);
+	*/
 }
 
 void CMyApp::InitFloor() {
@@ -232,7 +233,7 @@ bool CMyApp::Init()
 
 	InitShaders();
 	InitCube();
-	InitSkyBox();
+	//InitSkyBox();
 	InitFloor();
 
 	// egyéb textúrák betöltése
@@ -305,6 +306,7 @@ void CMyApp::Render()
 	}
 	m_program.Unuse();
 
+	/*
 	// skybox
 	// mentsük el az előző Z-test eredményt, azaz azt a relációt, ami alapján update-eljük a pixelt.
 	GLint prevDepthFnc;
@@ -312,7 +314,7 @@ void CMyApp::Render()
 
 	// most kisebb-egyenlőt használjunk, mert mindent kitolunk a távoli vágósíkokra
 	glDepthFunc(GL_LEQUAL);
-
+	
 	m_SkyboxVao.Bind();
 	m_programSkybox.Use();
 	m_programSkybox.SetUniform("MVP", viewProj * glm::translate( m_camera.GetEye()) );
@@ -328,7 +330,7 @@ void CMyApp::Render()
 
 	// végül állítsuk vissza
 	glDepthFunc(prevDepthFnc);
-
+	*/
 
 	// 1. feladat: készíts egy vertex shader-fragment shader párt, ami tárolt geometria _nélkül_ kirajzol egy tetszőleges pozícióba egy XYZ tengely-hármast,
 	//			   ahol az X piros, az Y zöld a Z pedig kék!
