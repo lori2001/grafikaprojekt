@@ -50,10 +50,14 @@ protected:
 	ProgramObject		m_program;			// mesh shader
 	ProgramObject		m_programSkybox;	// skybox shader
 
-	VertexArrayObject	m_FloorVao;
 	VertexArrayObject	m_CubeVao;			// VAO
 	IndexBuffer			m_CubeIndices;		// index buffer
 	ArrayBuffer			m_CubeVertexBuffer;	// VBO
+
+	VertexArrayObject	m_FloorVao;			// VAO
+	IndexBuffer			m_FloorIndices;		// index buffer
+	ArrayBuffer			m_FloorVertexBuffer;	// VBO
+	
 	VertexArrayObject	m_SkyboxVao;
 	IndexBuffer			m_SkyboxIndices;	
 	ArrayBuffer			m_SkyboxPos;		
@@ -62,8 +66,9 @@ protected:
 
 	Texture2D			m_woodTexture;
 	Texture2D			m_suzanneTexture;
-	Texture2D			m_savannaTexture;
 	TextureCubeMap		m_skyboxTexture;
+	Texture2D			m_floorTexture;
+
 
 	struct Vertex
 	{
@@ -71,6 +76,13 @@ protected:
 		glm::vec3 n;
 		glm::vec2 t;
 	};
+
+		struct Vertex2
+	{
+		glm::vec3 p;
+		glm::vec2 t;
+	};
+
 
 	// mesh adatok
 	std::unique_ptr<Mesh> m_mesh;

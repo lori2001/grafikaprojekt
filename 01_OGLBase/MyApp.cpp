@@ -101,6 +101,58 @@ void CMyApp::InitCube()
 	);
 }
 
+void CMyApp::InitFloor()
+{
+	//struct Vertex{ glm::vec3 position; glm::vec3 normals; glm::vec2 texture; };
+
+	std::vector<Vertex>vertices;
+	//front									 
+	vertices.push_back({ glm::vec3(-1, 0, 1), glm::vec3(0, 0, 1), glm::vec2(0, 0) });
+	vertices.push_back({ glm::vec3(1, 0,  1), glm::vec3(0, 0, 1), glm::vec2(1, 0) });
+	vertices.push_back({ glm::vec3(1, 0, -1), glm::vec3(0, 0, 1), glm::vec2(0, 1) });
+	vertices.push_back({ glm::vec3(-1, 0, -1), glm::vec3(0, 0, 1), glm::vec2(1, 1) });
+
+	std::vector<int> indices(6);
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
+	indices[3] = 2;
+	indices[4] = 3;
+	indices[5] = 0;
+
+	//
+	// geometria definiálása (std::vector<...>) és GPU pufferekbe való feltöltése BufferData-val
+	//
+
+	// vertexek pozíciói:
+	/*
+	Az m_CubeVertexBuffer konstruktora már létrehozott egy GPU puffer azonosítót és a most következő BufferData hívás ezt
+	1. bind-olni fogja GL_ARRAY_BUFFER target-re (hiszen m_CubeVertexBuffer típusa ArrayBuffer) és
+	2. glBufferData segítségével áttölti a GPU-ra az argumentumban adott tároló értékeit
+
+	*/
+
+	m_CubeVertexBuffer.BufferData(vertices);
+
+	// és a primitíveket alkotó csúcspontok indexei (az előző tömbökből) - triangle list-el való kirajzolásra felkészülve
+	m_CubeIndices.BufferData(indices);
+
+	// geometria VAO-ban való regisztrálása
+	m_CubeVao.Init(
+		{
+			// 0-ás attribútum "lényegében" glm::vec3-ak sorozata és az adatok az m_CubeVertexBuffer GPU pufferben vannak
+			{ CreateAttribute<		0,						// attribútum: 0
+									glm::vec3,				// CPU oldali adattípus amit a 0-ás attribútum meghatározására használtunk <- az eljárás a glm::vec3-ból kikövetkezteti, hogy 3 darab float-ból áll a 0-ás attribútum
+									0,						// offset: az attribútum tároló elejétől vett offset-je, byte-ban
+									sizeof(Vertex)			// stride: a következő csúcspont ezen attribútuma hány byte-ra van az aktuálistól
+								>, m_CubeVertexBuffer },
+			{ CreateAttribute<1, glm::vec3, (sizeof(glm::vec3)), sizeof(Vertex)>, m_CubeVertexBuffer },
+			{ CreateAttribute<2, glm::vec2, (2 * sizeof(glm::vec3)), sizeof(Vertex)>, m_CubeVertexBuffer },
+		},
+		m_CubeIndices
+	);
+}
+
 void CMyApp::InitSkyBox()
 {
 	m_SkyboxPos.BufferData(
@@ -196,9 +248,6 @@ void CMyApp::InitShaders()
 	);
 }
 
-void CMyApp::InitFloor() {
-
-}
 
 bool CMyApp::Init()
 {
@@ -216,7 +265,7 @@ bool CMyApp::Init()
 	// egyéb textúrák betöltése
 	m_woodTexture.FromFile("assets/wood.jpg");
 	m_suzanneTexture.FromFile("assets/marron.jpg");
-	m_savannaTexture.FromFile("assets/savanna.jpg");
+	m_floorTexture.FromFile("assets/savanna.jpg");
 
 	// mesh betöltése
 	m_mesh = std::unique_ptr<Mesh>(ObjParser::parse("assets/Suzanne.obj"));
@@ -249,37 +298,23 @@ void CMyApp::Render()
 
 	glm::mat4 viewProj = m_camera.GetViewProj();
 
-	// Talaj
+	/* TALAJ */
 
-
-	//Suzanne
-	glm::mat4 suzanneWorld = glm::mat4(1.0f);
 	m_program.Use();
-	m_program.SetTexture("texImage", 0, m_suzanneTexture);
-	m_program.SetUniform("MVP", viewProj * suzanneWorld);
-	m_program.SetUniform("world", suzanneWorld);
-	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(suzanneWorld)));
-	m_mesh->draw();
 
-	// kockák
-	//m_program.Use(); nem hívjuk meg újra, hisz ugyanazt a shadert használják
 	m_CubeVao.Bind();
-	m_program.SetTexture("texImage", 0, m_woodTexture);
+	m_program.SetTexture("texImage", 0, m_floorTexture);
 	glm::mat4 cubeWorld;
 
 	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
-	for (int i = 0; i < 10; ++i)
-	{
-		cubeWorld =
-			glm::rotate(time + 2 * glm::pi<float>() / 10 * i, glm::vec3(0, 1, 0))*
-			glm::translate(glm::vec3(10 + 5 * sin(time), 0, 0))*
-			glm::rotate((i + 1)*time, glm::vec3(0, 1, 0));
-		m_program.SetUniform("MVP", viewProj * cubeWorld);
-		m_program.SetUniform("world", cubeWorld);
-		m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-	}
+	cubeWorld = glm::rotate(0.0f, glm::vec3(0, 1, 0)) * glm::translate(glm::f32vec3(0, 0, 0)) * glm::scale(glm::vec3(5,5,5));
+	m_program.SetUniform("MVP", viewProj * cubeWorld);
+	m_program.SetUniform("world", cubeWorld);
+	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+
 	m_program.Unuse();
+
 
 	// skybox
 	// mentsük el az előző Z-test eredményt, azaz azt a relációt, ami alapján update-eljük a pixelt.
@@ -304,7 +339,6 @@ void CMyApp::Render()
 
 	// végül állítsuk vissza
 	glDepthFunc(prevDepthFnc);
-
 
 	// 1. feladat: készíts egy vertex shader-fragment shader párt, ami tárolt geometria _nélkül_ kirajzol egy tetszőleges pozícióba egy XYZ tengely-hármast,
 	//			   ahol az X piros, az Y zöld a Z pedig kék!
