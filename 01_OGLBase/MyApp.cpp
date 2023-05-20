@@ -19,6 +19,27 @@ CMyApp::~CMyApp(void)
 {
 }
 
+
+//
+// egy parametrikus felület (u,v) paraméterértékekhez tartozó normálvektorának
+// kiszámítását végző függvény
+//
+glm::vec3 CMyApp::GetNorm(float u, float v)
+{
+	// Képlettel
+	u *= float(2 * M_PI);
+	v *= float(M_PI);
+	return glm::vec3(sin(v) * cos(u), cos(v), sin(v) * sin(u));
+
+	// Numerikusan (nem kell ismerni a képletet, elég a pozícióét)
+	/*
+	glm::vec3 du = GetPos(u+0.01, v)-GetPos(u-0.01, v);
+	glm::vec3 dv = GetPos(u, v+0.01)-GetPos(u, v-0.01);
+
+	return glm::normalize(glm::cross(du, dv));*/
+}
+
+
 void CMyApp::InitCube()
 {
 	//struct Vertex{ glm::vec3 position; glm::vec3 normals; glm::vec2 texture; };
@@ -169,6 +190,7 @@ void CMyApp::InitSkyBox()
 
 void CMyApp::InitShaders()
 {
+
 	// a shadereket tároló program létrehozása az OpenGL-hez hasonló módon:
 	m_program.AttachShaders({
 		{ GL_VERTEX_SHADER, "myVert.vert"},
@@ -225,6 +247,7 @@ bool CMyApp::Init()
 	// kamera
 	m_camera.SetProj(glm::radians(60.0f), 640.0f / 480.0f, 0.01f, 1000.0f);
 
+
 	return true;
 }
 
@@ -270,10 +293,11 @@ void CMyApp::Render()
 	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
 	for (int i = 0; i < 10; ++i)
 	{
+		// this is how it spins
 		cubeWorld =
-			glm::rotate(time + 2 * glm::pi<float>() / 10 * i, glm::vec3(0, 1, 0))*
-			glm::translate(glm::vec3(10 + 5 * sin(time), 0, 0))*
-			glm::rotate((i + 1)*time, glm::vec3(0, 1, 0));
+			glm::rotate(time + 2 * glm::pi<float>() / 10 * i, glm::vec3(1, 0, 0))*
+			glm::translate(glm::vec3(0, 10, 0));
+			//glm::rotate((i + 1)*time, glm::vec3(0, 1, 0));
 		m_program.SetUniform("MVP", viewProj * cubeWorld);
 		m_program.SetUniform("world", cubeWorld);
 		m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));

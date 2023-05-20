@@ -75,6 +75,20 @@ protected:
 	// mesh adatok
 	std::unique_ptr<Mesh> m_mesh;
 
+	// segédfüggvények
+	glm::vec3 GetUV(float u, float v);
+	glm::vec3 GetNorm(float u, float v);
+
+
+	// shaderekhez szükséges változók
+	GLuint m_programID = 0; // shaderek programja
+
+	// uniform változók helye a shaderekben
+	GLuint m_loc_mvp = 0;
+	GLuint m_loc_world = 0;
+	GLuint m_loc_worldIT = 0;
+	GLuint m_loc_eye = 0;
+
 	// a jobb olvashatóság kedvéért
 	void InitShaders();
 	void InitCube();
