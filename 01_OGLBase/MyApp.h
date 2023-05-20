@@ -25,6 +25,8 @@
 // mesh
 #include "includes/ObjParser_OGL3.h"
 
+#include "Rocks.h"
+
 class CMyApp
 {
 public:
@@ -61,7 +63,6 @@ protected:
 	gCamera				m_camera;
 
 	Texture2D			m_woodTexture;
-	Texture2D			m_suzanneTexture;
 	Texture2D			m_savannaTexture;
 	TextureCubeMap		m_skyboxTexture;
 
@@ -73,7 +74,7 @@ protected:
 	};
 
 	// mesh adatok
-	std::unique_ptr<Mesh> m_mesh;
+	Rocks rocks;
 
 	// a jobb olvashatóság kedvéért
 	void InitShaders();

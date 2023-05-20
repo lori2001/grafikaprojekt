@@ -12,7 +12,6 @@
 CMyApp::CMyApp(void)
 {
 	m_camera.SetView(glm::vec3(5, 5, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	m_mesh = nullptr;
 }
 
 CMyApp::~CMyApp(void)
@@ -215,13 +214,10 @@ bool CMyApp::Init()
 
 	// egyéb textúrák betöltése
 	m_woodTexture.FromFile("assets/wood.jpg");
-	m_suzanneTexture.FromFile("assets/marron.jpg");
 	m_savannaTexture.FromFile("assets/savanna.jpg");
 
-	// mesh betöltése
-	m_mesh = std::unique_ptr<Mesh>(ObjParser::parse("assets/Suzanne.obj"));
-	m_mesh->initBuffers();
-	
+	rocks.Init();
+
 	// kamera
 	m_camera.SetProj(glm::radians(60.0f), 640.0f / 480.0f, 0.01f, 1000.0f);
 
@@ -251,16 +247,10 @@ void CMyApp::Render()
 
 	// Talaj
 
-
-	//Suzanne
-	glm::mat4 suzanneWorld = glm::mat4(1.0f);
+	// Kövek
 	m_program.Use();
-	m_program.SetTexture("texImage", 0, m_suzanneTexture);
-	m_program.SetUniform("MVP", viewProj * suzanneWorld);
-	m_program.SetUniform("world", suzanneWorld);
-	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(suzanneWorld)));
-	m_mesh->draw();
-
+	rocks.Render(&m_program, viewProj);
+	
 	// kockák
 	//m_program.Use(); nem hívjuk meg újra, hisz ugyanazt a shadert használják
 	m_CubeVao.Bind();
