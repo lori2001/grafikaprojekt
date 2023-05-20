@@ -50,6 +50,7 @@ protected:
 	ProgramObject		m_program;			// mesh shader
 	ProgramObject		m_programSkybox;	// skybox shader
 
+	VertexArrayObject	m_FloorVao;
 	VertexArrayObject	m_CubeVao;			// VAO
 	IndexBuffer			m_CubeIndices;		// index buffer
 	ArrayBuffer			m_CubeVertexBuffer;	// VBO
@@ -61,6 +62,7 @@ protected:
 
 	Texture2D			m_woodTexture;
 	Texture2D			m_suzanneTexture;
+	Texture2D			m_savannaTexture;
 	TextureCubeMap		m_skyboxTexture;
 
 	struct Vertex
@@ -77,5 +79,6 @@ protected:
 	void InitShaders();
 	void InitCube();
 	void InitSkyBox();
+	void InitFloor();
 };
 
