@@ -103,53 +103,31 @@ void CMyApp::InitCube()
 
 void CMyApp::InitFloor()
 {
-	//struct Vertex{ glm::vec3 position; glm::vec3 normals; glm::vec2 texture; };
+	// A talaj 4 csúcspontja
+	float a = 20;
 
-	std::vector<Vertex>vertices;
-	//front									 
-	vertices.push_back({ glm::vec3(-1, 0, 1), glm::vec3(0, 0, 1), glm::vec2(0, 0) });
-	vertices.push_back({ glm::vec3(1, 0,  1), glm::vec3(0, 0, 1), glm::vec2(1, 0) });
-	vertices.push_back({ glm::vec3(1, 0, -1), glm::vec3(0, 0, 1), glm::vec2(0, 1) });
-	vertices.push_back({ glm::vec3(-1, 0, -1), glm::vec3(0, 0, 1), glm::vec2(1, 1) });
+	std::vector<Vertex>vertices;									 
+	vertices.push_back({ glm::vec3(-a, 0, a), glm::vec3(0, 1, 0), glm::vec2(0, 0)});
+	vertices.push_back({ glm::vec3(a, 0,  a), glm::vec3(0, 1, 0), glm::vec2(a/2, 0)});
+	vertices.push_back({ glm::vec3(a, 0, -a), glm::vec3(0, 1, 0), glm::vec2(0, a/2)});
+	vertices.push_back({ glm::vec3(-a, 0, -a), glm::vec3(0, 1, 0), glm::vec2(a/2, a/2)});
 
-	std::vector<int> indices(6);
-	indices[0] = 0;
-	indices[1] = 1;
-	indices[2] = 2;
-	indices[3] = 2;
-	indices[4] = 3;
-	indices[5] = 0;
+	std::vector<int> indices = { 0, 1, 2, 2, 3, 0 };
 
-	//
-	// geometria definiálása (std::vector<...>) és GPU pufferekbe való feltöltése BufferData-val
-	//
+	m_FloorVertexBuffer.BufferData(vertices);
+	m_FloorIndices.BufferData(indices);
 
-	// vertexek pozíciói:
-	/*
-	Az m_CubeVertexBuffer konstruktora már létrehozott egy GPU puffer azonosítót és a most következő BufferData hívás ezt
-	1. bind-olni fogja GL_ARRAY_BUFFER target-re (hiszen m_CubeVertexBuffer típusa ArrayBuffer) és
-	2. glBufferData segítségével áttölti a GPU-ra az argumentumban adott tároló értékeit
-
-	*/
-
-	m_CubeVertexBuffer.BufferData(vertices);
-
-	// és a primitíveket alkotó csúcspontok indexei (az előző tömbökből) - triangle list-el való kirajzolásra felkészülve
-	m_CubeIndices.BufferData(indices);
-
-	// geometria VAO-ban való regisztrálása
-	m_CubeVao.Init(
+	// VAO-ban leírjuk hogyan lesz a VBO-ban eltárolva a talaj adat
+	m_FloorVao.Init(
 		{
-			// 0-ás attribútum "lényegében" glm::vec3-ak sorozata és az adatok az m_CubeVertexBuffer GPU pufferben vannak
-			{ CreateAttribute<		0,						// attribútum: 0
-									glm::vec3,				// CPU oldali adattípus amit a 0-ás attribútum meghatározására használtunk <- az eljárás a glm::vec3-ból kikövetkezteti, hogy 3 darab float-ból áll a 0-ás attribútum
-									0,						// offset: az attribútum tároló elejétől vett offset-je, byte-ban
-									sizeof(Vertex)			// stride: a következő csúcspont ezen attribútuma hány byte-ra van az aktuálistól
-								>, m_CubeVertexBuffer },
-			{ CreateAttribute<1, glm::vec3, (sizeof(glm::vec3)), sizeof(Vertex)>, m_CubeVertexBuffer },
-			{ CreateAttribute<2, glm::vec2, (2 * sizeof(glm::vec3)), sizeof(Vertex)>, m_CubeVertexBuffer },
+			// 0-ás attribútum | vec3-ból tudja, hogy 3 float | offest = 0 | hány byte-ra van a kövi csúcspont | VBO
+			{ CreateAttribute<0, glm::vec3,	0, sizeof(Vertex)>, m_FloorVertexBuffer },
+			// 1-es attribútum | vec3-ból tudja, hogy 3 float | offest = sizeof(vec3) | hány byte-ra van a kövi csúcspont | VBO
+			{ CreateAttribute<1, glm::vec3, (sizeof(glm::vec3)), sizeof(Vertex)>, m_FloorVertexBuffer },
+			// 2-es attribútum | vec2-ból tudja, hogy 2 float | offest = 2*sizeof(vec3) | hány byte-ra van a kövi csúcspont | VBO
+			{ CreateAttribute<2, glm::vec2, (2 * sizeof(glm::vec3)), sizeof(Vertex)>, m_FloorVertexBuffer},
 		},
-		m_CubeIndices
+		m_FloorIndices
 	);
 }
 
@@ -258,18 +236,14 @@ bool CMyApp::Init()
 	glEnable(GL_DEPTH_TEST); // mélységi teszt bekapcsolása (takarás)
 
 	InitShaders();
-	InitCube();
 	InitSkyBox();
 	InitFloor();
 
 	// egyéb textúrák betöltése
 	m_woodTexture.FromFile("assets/wood.jpg");
-	m_suzanneTexture.FromFile("assets/marron.jpg");
 	m_floorTexture.FromFile("assets/savanna.jpg");
 
 	// mesh betöltése
-	m_mesh = std::unique_ptr<Mesh>(ObjParser::parse("assets/Suzanne.obj"));
-	m_mesh->initBuffers();
 	
 	// kamera
 	m_camera.SetProj(glm::radians(60.0f), 640.0f / 480.0f, 0.01f, 1000.0f);
@@ -299,18 +273,15 @@ void CMyApp::Render()
 	glm::mat4 viewProj = m_camera.GetViewProj();
 
 	/* TALAJ */
-
 	m_program.Use();
 
-	m_CubeVao.Bind();
+	m_FloorVao.Bind();
 	m_program.SetTexture("texImage", 0, m_floorTexture);
-	glm::mat4 cubeWorld;
+	glm::mat4 floor = glm::mat4(1.0f);
 
-	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
-	cubeWorld = glm::rotate(0.0f, glm::vec3(0, 1, 0)) * glm::translate(glm::f32vec3(0, 0, 0)) * glm::scale(glm::vec3(5,5,5));
-	m_program.SetUniform("MVP", viewProj * cubeWorld);
-	m_program.SetUniform("world", cubeWorld);
-	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));
+	m_program.SetUniform("MVP", viewProj * floor);
+	m_program.SetUniform("world", floor);
+	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(floor)));
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 
 	m_program.Unuse();

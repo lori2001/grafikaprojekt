@@ -56,7 +56,7 @@ protected:
 
 	VertexArrayObject	m_FloorVao;			// VAO
 	IndexBuffer			m_FloorIndices;		// index buffer
-	ArrayBuffer			m_FloorVertexBuffer;	// VBO
+	ArrayBuffer			m_FloorVertexBuffer;// VBO
 	
 	VertexArrayObject	m_SkyboxVao;
 	IndexBuffer			m_SkyboxIndices;	
@@ -77,10 +77,10 @@ protected:
 		glm::vec2 t;
 	};
 
-		struct Vertex2
+	struct Vertex2
 	{
 		glm::vec3 p;
-		glm::vec2 t;
+		glm::vec3 n;
 	};
 
 
