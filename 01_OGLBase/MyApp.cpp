@@ -248,6 +248,8 @@ bool CMyApp::Init()
 	// kamera
 	m_camera.SetProj(glm::radians(60.0f), 640.0f / 480.0f, 0.01f, 1000.0f);
 
+	//m_loc_eye = glGetUniformLocation(m_programID, "eye_pos");
+	m_loc_eye = m_program.GetLocation("eye_pos");
 
 	return true;
 }
@@ -272,7 +274,7 @@ void CMyApp::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 viewProj = m_camera.GetViewProj();
-
+	glm::vec3 eye = m_camera.GetEye();
 	// Talaj
 
 
@@ -302,8 +304,10 @@ void CMyApp::Render()
 		m_program.SetUniform("MVP", viewProj * cubeWorld);
 		m_program.SetUniform("world", cubeWorld);
 		m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));
+		//m_program.SetUniform("eye", eye.x);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 	}
+	glUniform3fv(m_loc_eye, 1, &eye.x);
 	m_program.Unuse();
 
 	/*

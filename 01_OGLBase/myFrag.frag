@@ -55,20 +55,20 @@ void main()
 		- pow: http://www.opengl.org/sdk/docs/manglsl/xhtml/pow.xml
 				pow(alap, kitevő);
 	*/
-	/*
+	
 	vec3 e = normalize(eye - vs_out_pos);
 	vec3 r = normalize(reflect(light_dir, vs_out_norm));
-	float si = clamp(dot(e, r), 0.0, 1.0);
+	float si = pow(clamp(dot(e, r), 0.0, 1.0), 14);
 	vec3 specular = si * Ls * Ks;
-	*/
+	
 	//
 	// a fragment végső színének meghatározása
 	//
 
 	// felületi normális
-	fs_out_col = vec4(vs_out_norm, 1);
+	//fs_out_col = vec4(vs_out_norm, 1);
 	// + specular
-	fs_out_col = vec4(ambient + diffuse, 1);
+	fs_out_col = vec4(ambient + diffuse + specular, 1);
 
 	// textúrával
 	//vec4 textureColor = texture(texImage, vs_out_tex);
