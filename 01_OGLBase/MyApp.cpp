@@ -196,10 +196,6 @@ void CMyApp::InitShaders()
 	);
 }
 
-void CMyApp::InitFloor() {
-
-}
-
 bool CMyApp::Init()
 {
 	// törlési szín legyen kékes
@@ -209,18 +205,16 @@ bool CMyApp::Init()
 	glEnable(GL_DEPTH_TEST); // mélységi teszt bekapcsolása (takarás)
 
 	InitShaders();
-	InitCube();
 	InitSkyBox();
-	InitFloor();
 
 	// egyéb textúrák betöltése
 	m_woodTexture.FromFile("assets/wood.jpg");
-	m_suzanneTexture.FromFile("assets/marron.jpg");
-	m_savannaTexture.FromFile("assets/savanna.jpg");
+
+	// Talaj
+	floor.Init();
+
 
 	// mesh betöltése
-	m_mesh = std::unique_ptr<Mesh>(ObjParser::parse("assets/Suzanne.obj"));
-	m_mesh->initBuffers();
 	
 	// kamera
 	m_camera.SetProj(glm::radians(60.0f), 640.0f / 480.0f, 0.01f, 1000.0f);
@@ -249,37 +243,8 @@ void CMyApp::Render()
 
 	glm::mat4 viewProj = m_camera.GetViewProj();
 
-	// Talaj
-
-
-	//Suzanne
-	glm::mat4 suzanneWorld = glm::mat4(1.0f);
-	m_program.Use();
-	m_program.SetTexture("texImage", 0, m_suzanneTexture);
-	m_program.SetUniform("MVP", viewProj * suzanneWorld);
-	m_program.SetUniform("world", suzanneWorld);
-	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(suzanneWorld)));
-	m_mesh->draw();
-
-	// kockák
-	//m_program.Use(); nem hívjuk meg újra, hisz ugyanazt a shadert használják
-	m_CubeVao.Bind();
-	m_program.SetTexture("texImage", 0, m_woodTexture);
-	glm::mat4 cubeWorld;
-
-	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
-	for (int i = 0; i < 10; ++i)
-	{
-		cubeWorld =
-			glm::rotate(time + 2 * glm::pi<float>() / 10 * i, glm::vec3(0, 1, 0))*
-			glm::translate(glm::vec3(10 + 5 * sin(time), 0, 0))*
-			glm::rotate((i + 1)*time, glm::vec3(0, 1, 0));
-		m_program.SetUniform("MVP", viewProj * cubeWorld);
-		m_program.SetUniform("world", cubeWorld);
-		m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-	}
-	m_program.Unuse();
+	/* TALAJ */
+	floor.Render(&m_program, viewProj);
 
 	// skybox
 	// mentsük el az előző Z-test eredményt, azaz azt a relációt, ami alapján update-eljük a pixelt.
@@ -304,7 +269,6 @@ void CMyApp::Render()
 
 	// végül állítsuk vissza
 	glDepthFunc(prevDepthFnc);
-
 
 	// 1. feladat: készíts egy vertex shader-fragment shader párt, ami tárolt geometria _nélkül_ kirajzol egy tetszőleges pozícióba egy XYZ tengely-hármast,
 	//			   ahol az X piros, az Y zöld a Z pedig kék!

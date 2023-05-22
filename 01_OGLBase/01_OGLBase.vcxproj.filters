@@ -72,6 +72,9 @@
     <ClInclude Include="Includes\GLDebugMessageCallback.h">
       <Filter>GL utilities</Filter>
     </ClInclude>
+    <ClInclude Include="SavannaFloor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyApp.cpp">
@@ -113,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="Includes\GLDebugMessageCallback.cpp">
       <Filter>GL utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="SavannaFloor.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
