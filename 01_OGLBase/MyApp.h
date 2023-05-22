@@ -25,6 +25,9 @@
 // mesh
 #include "includes/ObjParser_OGL3.h"
 
+
+#include "SavannaFloor.h"
+
 class CMyApp
 {
 public:
@@ -53,10 +56,6 @@ protected:
 	VertexArrayObject	m_CubeVao;			// VAO
 	IndexBuffer			m_CubeIndices;		// index buffer
 	ArrayBuffer			m_CubeVertexBuffer;	// VBO
-
-	VertexArrayObject	m_FloorVao;			// VAO
-	IndexBuffer			m_FloorIndices;		// index buffer
-	ArrayBuffer			m_FloorVertexBuffer;// VBO
 	
 	VertexArrayObject	m_SkyboxVao;
 	IndexBuffer			m_SkyboxIndices;	
@@ -67,7 +66,6 @@ protected:
 	Texture2D			m_woodTexture;
 	Texture2D			m_suzanneTexture;
 	TextureCubeMap		m_skyboxTexture;
-	Texture2D			m_floorTexture;
 
 
 	struct Vertex
@@ -87,10 +85,11 @@ protected:
 	// mesh adatok
 	std::unique_ptr<Mesh> m_mesh;
 
+	SavannaFloor floor;
+
 	// a jobb olvashatóság kedvéért
 	void InitShaders();
 	void InitCube();
 	void InitSkyBox();
-	void InitFloor();
 };
 
