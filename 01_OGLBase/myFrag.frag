@@ -23,7 +23,7 @@ uniform vec3 Ks = vec3(0.4, 0.8, 1.0);
 
 uniform vec3 eye = vec3(1, 1, 1);
 
-//uniform sampler2D texImage;
+uniform sampler2D texImage;
 
 void main()
 {	
@@ -58,7 +58,7 @@ void main()
 	
 	vec3 e = normalize(eye - vs_out_pos);
 	vec3 r = normalize(reflect(light_dir, vs_out_norm));
-	float si = pow(clamp(dot(e, r), 0.0, 1.0), 14);
+	float si = pow(clamp(dot(e, r), 0.0, 1.0), 2);
 	vec3 specular = si * Ls * Ks;
 	
 	//
@@ -68,9 +68,9 @@ void main()
 	// felületi normális
 	//fs_out_col = vec4(vs_out_norm, 1);
 	// + specular
-	fs_out_col = vec4(ambient + diffuse + specular, 1);
+	//fs_out_col = vec4(ambient + diffuse + specular, 1);
 
 	// textúrával
-	//vec4 textureColor = texture(texImage, vs_out_tex);
-	//fs_out_col = vec4(ambient + diffuse + specular, 1) * textureColor;
+	vec4 textureColor = texture(texImage, vs_out_tex);
+	fs_out_col = vec4(ambient + diffuse + specular, 1) * textureColor;
 }

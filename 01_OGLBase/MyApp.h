@@ -25,6 +25,9 @@
 // mesh
 #include "includes/ObjParser_OGL3.h"
 
+
+#include "SavannaFloor.h"
+
 class CMyApp
 {
 public:
@@ -50,10 +53,10 @@ protected:
 	ProgramObject		m_program;			// mesh shader
 	ProgramObject		m_programSkybox;	// skybox shader
 
-	VertexArrayObject	m_FloorVao;
 	VertexArrayObject	m_CubeVao;			// VAO
 	IndexBuffer			m_CubeIndices;		// index buffer
 	ArrayBuffer			m_CubeVertexBuffer;	// VBO
+	
 	VertexArrayObject	m_SkyboxVao;
 	IndexBuffer			m_SkyboxIndices;	
 	ArrayBuffer			m_SkyboxPos;		
@@ -62,8 +65,8 @@ protected:
 
 	Texture2D			m_woodTexture;
 	Texture2D			m_suzanneTexture;
-	Texture2D			m_savannaTexture;
 	TextureCubeMap		m_skyboxTexture;
+
 
 	struct Vertex
 	{
@@ -72,27 +75,21 @@ protected:
 		glm::vec2 t;
 	};
 
+	struct Vertex2
+	{
+		glm::vec3 p;
+		glm::vec3 n;
+	};
+
+
 	// mesh adatok
 	std::unique_ptr<Mesh> m_mesh;
 
-	// segédfüggvények
-	glm::vec3 GetUV(float u, float v);
-	glm::vec3 GetNorm(float u, float v);
-
-
-	// shaderekhez szükséges változók
-	GLuint m_programID = 0; // shaderek programja
-
-	// uniform változók helye a shaderekben
-	GLuint m_loc_mvp = 0;
-	GLuint m_loc_world = 0;
-	GLuint m_loc_worldIT = 0;
-	GLuint m_loc_eye = 0;
+	SavannaFloor floor;
 
 	// a jobb olvashatóság kedvéért
 	void InitShaders();
 	void InitCube();
 	void InitSkyBox();
-	void InitFloor();
 };
 

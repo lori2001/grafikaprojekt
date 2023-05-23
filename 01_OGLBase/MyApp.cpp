@@ -24,21 +24,6 @@ CMyApp::~CMyApp(void)
 // egy parametrikus felület (u,v) paraméterértékekhez tartozó normálvektorának
 // kiszámítását végző függvény
 //
-glm::vec3 CMyApp::GetNorm(float u, float v)
-{
-	// Képlettel
-	u *= float(2 * M_PI);
-	v *= float(M_PI);
-	return glm::vec3(sin(v) * cos(u), cos(v), sin(v) * sin(u));
-
-	// Numerikusan (nem kell ismerni a képletet, elég a pozícióét)
-	/*
-	glm::vec3 du = GetPos(u+0.01, v)-GetPos(u-0.01, v);
-	glm::vec3 dv = GetPos(u, v+0.01)-GetPos(u, v-0.01);
-
-	return glm::normalize(glm::cross(du, dv));*/
-}
-
 
 void CMyApp::InitCube()
 {
@@ -219,10 +204,6 @@ void CMyApp::InitShaders()
 	*/
 }
 
-void CMyApp::InitFloor() {
-
-}
-
 bool CMyApp::Init()
 {
 	// törlési szín legyen kékes
@@ -232,24 +213,22 @@ bool CMyApp::Init()
 	glEnable(GL_DEPTH_TEST); // mélységi teszt bekapcsolása (takarás)
 
 	InitShaders();
-	InitCube();
-	//InitSkyBox();
-	InitFloor();
+	InitSkyBox();
 
 	// egyéb textúrák betöltése
 	m_woodTexture.FromFile("assets/wood.jpg");
-	m_suzanneTexture.FromFile("assets/marron.jpg");
-	m_savannaTexture.FromFile("assets/savanna.jpg");
+
+	// Talaj
+	floor.Init();
+
 
 	// mesh betöltése
-	m_mesh = std::unique_ptr<Mesh>(ObjParser::parse("assets/Suzanne.obj"));
-	m_mesh->initBuffers();
 	
 	// kamera
 	m_camera.SetProj(glm::radians(60.0f), 640.0f / 480.0f, 0.01f, 1000.0f);
 
 	//m_loc_eye = glGetUniformLocation(m_programID, "eye_pos");
-	m_loc_eye = m_program.GetLocation("eye_pos");
+	//m_loc_eye = m_program.GetLocation("eye_pos");
 
 	return true;
 }
@@ -274,72 +253,10 @@ void CMyApp::Render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 viewProj = m_camera.GetViewProj();
-	glm::vec3 eye = m_camera.GetEye();
-	// Talaj
 
+	/* TALAJ */
+	floor.Render(&m_program, viewProj);
 
-	//Suzanne
-	glm::mat4 suzanneWorld = glm::mat4(1.0f);
-	m_program.Use();
-	m_program.SetTexture("texImage", 0, m_suzanneTexture);
-	m_program.SetUniform("MVP", viewProj * suzanneWorld);
-	m_program.SetUniform("world", suzanneWorld);
-	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(suzanneWorld)));
-	m_mesh->draw();
-
-	// kockák
-	//m_program.Use(); nem hívjuk meg újra, hisz ugyanazt a shadert használják
-	m_CubeVao.Bind();
-	m_program.SetTexture("texImage", 0, m_woodTexture);
-	glm::mat4 cubeWorld;
-
-	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
-	for (int i = 0; i < 10; ++i)
-	{
-		// this is how it spins
-		cubeWorld =
-			glm::rotate(time + 2 * glm::pi<float>() / 10 * i, glm::vec3(1, 0, 0))*
-			glm::translate(glm::vec3(0, 10, 0));
-			//glm::rotate((i + 1)*time, glm::vec3(0, 1, 0));
-		m_program.SetUniform("MVP", viewProj * cubeWorld);
-		m_program.SetUniform("world", cubeWorld);
-		m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));
-		//m_program.SetUniform("eye", eye.x);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-	}
-	glUniform3fv(m_loc_eye, 1, &eye.x);
-	m_program.Unuse();
-
-	/*
-	// skybox
-	// mentsük el az előző Z-test eredményt, azaz azt a relációt, ami alapján update-eljük a pixelt.
-	GLint prevDepthFnc;
-	glGetIntegerv(GL_DEPTH_FUNC, &prevDepthFnc);
-
-	// most kisebb-egyenlőt használjunk, mert mindent kitolunk a távoli vágósíkokra
-	glDepthFunc(GL_LEQUAL);
-	
-	m_SkyboxVao.Bind();
-	m_programSkybox.Use();
-	m_programSkybox.SetUniform("MVP", viewProj * glm::translate( m_camera.GetEye()) );
-	
-	// cube map textúra beállítása 0-ás mintavételezőre és annak a shaderre beállítása
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, m_skyboxTexture);
-	glUniform1i(m_programSkybox.GetLocation("skyboxTexture"), 0);
-	// az előző három sor <=> m_programSkybox.SetCubeTexture("skyboxTexture", 0, m_skyboxTexture);
-
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-	m_programSkybox.Unuse();
-
-	// végül állítsuk vissza
-	glDepthFunc(prevDepthFnc);
-	*/
-
-	// 1. feladat: készíts egy vertex shader-fragment shader párt, ami tárolt geometria _nélkül_ kirajzol egy tetszőleges pozícióba egy XYZ tengely-hármast,
-	//			   ahol az X piros, az Y zöld a Z pedig kék!
-
-	//ImGui Testwindow
 	ImGui::ShowTestWindow();
 }
 
