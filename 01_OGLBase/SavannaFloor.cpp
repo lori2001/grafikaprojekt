@@ -47,7 +47,7 @@ bool SavannaFloor::Init()
 	return true;
 }
 
-void SavannaFloor::Render(ProgramObject* m_program, glm::mat4 viewProj, glm::vec3 lightPos, glm::vec3 lightDir, glm::vec3 ambientCol)
+void SavannaFloor::Render(ProgramObject* m_program, glm::mat4 viewProj)
 {
 	m_FloorVao.Bind();
 

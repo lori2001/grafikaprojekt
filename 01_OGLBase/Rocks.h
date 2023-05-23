@@ -30,10 +30,10 @@ public:
 
 	void Init();
 
-	void Render(ProgramObject* m_program, const glm::mat4& viewProj, glm::vec3 lightPos, glm::vec3 lightDir, glm::vec3 ambientCol);
+	void Render(ProgramObject* m_program, const glm::mat4& viewProj);
 
 private:
-	int m_num_of_rocks = 50;
+	int m_num_of_rocks = 80;
 
 	std::unique_ptr<Mesh> m_rock_mesh;
 	Texture2D			m_rockSpecularTexture;

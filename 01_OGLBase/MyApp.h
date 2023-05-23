@@ -87,10 +87,17 @@ protected:
 	Rocks rocks;
 	SavannaFloor floor;
 
-	//a napnak a pozicioja es az iranya
-	glm::vec3 lightPos = glm::vec3(-25, 5, -25);
-	glm::vec3 lightDir = glm::vec3(25, -5, 25);
+	// a napnak a pozicioja es az iranya
+	const glm::vec3 INITIAL_LIGHT_DIR = glm::vec3(0.0F, -90.0F * (M_PI / 180.0F), 0);
+	const glm::vec3 INITIAL_LIGHT_POS = glm::vec3(45.0F, 0, 0);
+	glm::vec3 lightPos = INITIAL_LIGHT_POS;
+	glm::vec3 lightDir = INITIAL_LIGHT_DIR;
 	glm::vec3 ambientCol = glm::vec3(1, 1, 1);
+
+	float beta = 0;
+	const float betaPlus = 3.14 / 60;
+	float lastTime = 0;
+	float timeDiff = 0.08F;
 
 	// a jobb olvashatóság kedvéért
 	void InitShaders();

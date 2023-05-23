@@ -22,7 +22,7 @@ void Rocks::Init()
 	}
 }
 
-void Rocks::Render(ProgramObject* m_program, const glm::mat4& viewProj, glm::vec3 lightPos, glm::vec3 lightDir, glm::vec3 ambientCol)
+void Rocks::Render(ProgramObject* m_program, const glm::mat4& viewProj)
 {
 	m_program->SetTexture("texImage", 0, m_rockSpecularTexture);
 	for (auto& rock_world : m_rock_mesh_worlds) {

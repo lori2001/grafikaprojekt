@@ -155,21 +155,21 @@ void CMyApp::InitSkyBox()
 	);
 
 	// skybox texture
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	m_skyboxTexture.AttachFromFile("assets/xpos.png", false, GL_TEXTURE_CUBE_MAP_POSITIVE_X);
-	m_skyboxTexture.AttachFromFile("assets/xneg.png", false, GL_TEXTURE_CUBE_MAP_NEGATIVE_X);
-	m_skyboxTexture.AttachFromFile("assets/ypos.png", false, GL_TEXTURE_CUBE_MAP_POSITIVE_Y);
-	m_skyboxTexture.AttachFromFile("assets/yneg.png", false, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y);
-	m_skyboxTexture.AttachFromFile("assets/zpos.png", false, GL_TEXTURE_CUBE_MAP_POSITIVE_Z);
-	m_skyboxTexture.AttachFromFile("assets/zneg.png", true, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z);
+m_skyboxTexture.AttachFromFile("assets/xpos.png", false, GL_TEXTURE_CUBE_MAP_POSITIVE_X);
+m_skyboxTexture.AttachFromFile("assets/xneg.png", false, GL_TEXTURE_CUBE_MAP_NEGATIVE_X);
+m_skyboxTexture.AttachFromFile("assets/ypos.png", false, GL_TEXTURE_CUBE_MAP_POSITIVE_Y);
+m_skyboxTexture.AttachFromFile("assets/yneg.png", false, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y);
+m_skyboxTexture.AttachFromFile("assets/zpos.png", false, GL_TEXTURE_CUBE_MAP_POSITIVE_Z);
+m_skyboxTexture.AttachFromFile("assets/zneg.png", true, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z);
 
-	// a GL_TEXTURE_MAG_FILTER-t és a GL_TEXTURE_MIN_FILTER-t beállítja az AttachFromFile
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+// a GL_TEXTURE_MAG_FILTER-t és a GL_TEXTURE_MIN_FILTER-t beállítja az AttachFromFile
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 void CMyApp::InitShaders()
@@ -179,14 +179,14 @@ void CMyApp::InitShaders()
 	m_program.AttachShaders({
 		{ GL_VERTEX_SHADER, "myVert.vert"},
 		{ GL_FRAGMENT_SHADER, "myFrag.frag"}
-	});
+		});
 
 	// attributomok osszerendelese a VAO es shader kozt
 	m_program.BindAttribLocations({
 		{ 0, "vs_in_pos" },				// VAO 0-as csatorna menjen a vs_in_pos-ba
 		{ 1, "vs_in_norm" },			// VAO 1-es csatorna menjen a vs_in_norm-ba
 		{ 2, "vs_in_tex" },				// VAO 2-es csatorna menjen a vs_in_tex-be
-	});
+		});
 
 	m_program.LinkProgram();
 	/*
@@ -213,6 +213,7 @@ bool CMyApp::Init()
 
 	InitShaders();
 	InitSkyBox();
+	InitCube();
 
 	// egyéb textúrák betöltése
 	m_woodTexture.FromFile("assets/wood.jpg");
@@ -252,56 +253,62 @@ void CMyApp::Render()
 
 	const glm::mat4 viewProj = m_camera.GetViewProj();
 
-	if (lightPos.x >= 25 || lightPos.z >= 25)
-	{
-		lightPos.x = -25;
-		lightPos.z = -25;
-		lightPos.y = 5;
-		lightDir.x = 25;
-		lightDir.z = 25;
-		lightDir.y = -5;
-	}
-	// 25 / 500 => (x + 5) / 500
-	lightPos.x += 0.05;
-	lightPos.z += 0.05;
-	lightDir.x -= 0.05;
-	lightDir.z -= 0.05;
+	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
+	if(time - lastTime > timeDiff) {
+		beta += betaPlus;
+		if (beta >= 2 * M_PI) beta = 0;
+		
+		lightPos.y += 1 * glm::cos(beta);
+		lightPos.x += -2.3 * glm::sin(beta);
 
-	if (lightPos.x <= 0 || lightPos.z <= 0)
-	{
-		lightPos.y += 0.005; // itt meg /10
-		lightDir.y -= 0.005;
-	}
-	else
-	{
-		lightPos.y -= 0.005;
-		lightDir.y += 0.005;
-	}
+		if (beta >= M_PI) {
+			lightDir = glm::vec3(0, 0, 0);
+		}
+		else {
+			lightDir = glm::vec3(lightPos.x, -lightPos.y, -lightPos.z);
+		}
 
-	// ambiens feny
-	if (lightPos.x <= -15 || lightPos.z <= -15)
-	{
-		ambientCol = glm::vec3(0.2, 0.4, 1);
-	}
-	else if (lightPos.x > -15 && lightPos.x <= 5)
-	{
-		ambientCol = glm::vec3(1, 1, 1);
-	}
-	else
-	{
-		ambientCol = glm::vec3(1, 0.2, 0.2);
+		// ambiens feny
+		if (lightPos.y >= 10)
+		{
+			ambientCol = glm::vec3(0.5, 0.5, 0.5);
+		}
+		else if (lightPos.y >= 0)
+		{
+			ambientCol = glm::vec3(1, 0.2, 0.2); // 255, 51, 51
+		}
+		else
+		{
+			ambientCol = glm::vec3(0.2, 0.4, 1); // 51, 102, 255
+		}
+		
+		lastTime = time;
 	}
 
 	m_program.Use();
 
 	m_program.SetUniform("ambientCol", ambientCol);
+
 	m_program.SetUniform("lightPos", lightPos);
 	m_program.SetUniform("lightDir", lightDir);
-
+	
 	// Kövek
-	rocks.Render(&m_program, viewProj, lightPos, lightDir, ambientCol);
+	rocks.Render(&m_program, viewProj);
 	// TALAJ
-	floor.Render(&m_program, viewProj, lightPos, lightDir, ambientCol);
+	floor.Render(&m_program, viewProj);
+
+	m_CubeVao.Bind();
+	m_program.SetTexture("texImage", 0, m_woodTexture);
+	glm::mat4 cubeWorld;
+
+	cubeWorld = glm::translate(lightPos) *
+		glm::rotate(beta, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	m_program.SetUniform("MVP", viewProj * cubeWorld);
+	m_program.SetUniform("world", cubeWorld);
+	m_program.SetUniform("world", cubeWorld);
+	m_program.SetUniform("worldIT", glm::inverse(glm::transpose(cubeWorld)));
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 
 	m_program.Unuse();
 
