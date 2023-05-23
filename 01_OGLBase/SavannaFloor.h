@@ -30,4 +30,6 @@ private:
 		glm::vec2 t;
 	};
 
+	float m_floor_size = 40.0F;
+	glm::mat4 m_floor_world = glm::mat4(1.0f);
 };

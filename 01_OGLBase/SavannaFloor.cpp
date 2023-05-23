@@ -15,11 +15,10 @@ SavannaFloor::~SavannaFloor(void) {
 bool SavannaFloor::Init()
 {
 	// textúra
-	m_floorTexture.FromFile("assets/savanna.jpg");
-
+	m_floorTexture.FromFile("assets/savanna.png");
 
 	// A talaj 4 csúcspontja
-	float a = 20;
+	float a = m_floor_size;
 
 	std::vector<Vertex>vertices;
 	vertices.push_back({ glm::vec3(-a, 0, a), glm::vec3(0, 1, 0), glm::vec2(0, 0) });
@@ -50,19 +49,13 @@ bool SavannaFloor::Init()
 
 void SavannaFloor::Render(ProgramObject* m_program, glm::mat4 viewProj, glm::vec3 lightPos, glm::vec3 lightDir, glm::vec3 ambientCol)
 {
-	// m_program->Use();
-
 	m_FloorVao.Bind();
+
 	m_program->SetTexture("texImage", 0, m_floorTexture);
-	glm::mat4 floor = glm::mat4(1.0f);
 
-	m_program->SetUniform("MVP", viewProj * floor);
-	m_program->SetUniform("world", floor);
-	m_program->SetUniform("lightPos", lightPos);
-	m_program->SetUniform("lightDir", lightDir);
-	m_program->SetUniform("ambientCol", ambientCol);
-	m_program->SetUniform("worldIT", glm::inverse(glm::transpose(floor)));
+	m_program->SetUniform("MVP", viewProj * m_floor_world);
+	m_program->SetUniform("world", m_floor_world);
+	m_program->SetUniform("worldIT", glm::inverse(glm::transpose(m_floor_world)));
+
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
-
-	m_program->Unuse();
 }

@@ -278,7 +278,7 @@ void CMyApp::Render()
 		lightDir.y += 0.005;
 	}
 
-	//ambiens feny
+	// ambiens feny
 	if (lightPos.x <= -15 || lightPos.z <= -15)
 	{
 		ambientCol = glm::vec3(0.2, 0.4, 1);
@@ -292,12 +292,18 @@ void CMyApp::Render()
 		ambientCol = glm::vec3(1, 0.2, 0.2);
 	}
 
-	// Kövek
 	m_program.Use();
-	rocks.Render(&m_program, viewProj);
-	
+
+	m_program.SetUniform("ambientCol", ambientCol);
+	m_program.SetUniform("lightPos", lightPos);
+	m_program.SetUniform("lightDir", lightDir);
+
+	// Kövek
+	rocks.Render(&m_program, viewProj, lightPos, lightDir, ambientCol);
 	// TALAJ
 	floor.Render(&m_program, viewProj, lightPos, lightDir, ambientCol);
+
+	m_program.Unuse();
 
 	ImGui::ShowTestWindow();
 }
