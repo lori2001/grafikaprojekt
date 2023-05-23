@@ -6,15 +6,18 @@ in vec3 vs_out_norm;
 in vec2 vs_out_tex;
 in vec3 vs_out_eye_pos;
 in vec3 vs_out_light_dir;
+in vec3 vs_out_la;
 
 // kimenő érték - a fragment színe
 out vec4 fs_out_col;
 
-// irány fényforrás: fény iránya
-//uniform vec3 light_dir = vec3(-1, -1, -1);
-
 // fénytulajdonságok: ambiens, diffúz, spekuláris
-uniform vec3 La = vec3(0.4, 0.4, 0.4);
+//kekes
+//uniform vec3 La = vec3(0.2, 0.4, 1);
+//pirosas
+//uniform vec3 La = vec3(1, 0.2, 0.2);
+//feher
+//uniform vec3 La = vec3(1, 1, 1);
 uniform vec3 Ld = vec3(0.4, 0.6, 0.6);
 uniform vec3 Ls = vec3(0.9, 0.9, 0.9);
 
@@ -33,7 +36,7 @@ void main()
 	// ambiens szín számítása
 	//
 	// ez ejjel legyen kekes, nappal feher, este voroses
-	vec3 ambient = La * Ka;
+	vec3 ambient = vs_out_la * Ka;
 
 	//
 	// diffúz szín számítása

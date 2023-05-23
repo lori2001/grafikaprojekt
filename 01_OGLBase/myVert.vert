@@ -11,6 +11,7 @@ out vec3 vs_out_norm;
 out vec2 vs_out_tex;
 out vec3 vs_out_eye_pos;
 out vec3 vs_out_light_dir;
+out vec3 vs_out_la;
 
 // shader külső paraméterei
 uniform mat4 MVP;
@@ -18,6 +19,7 @@ uniform mat4 world;
 uniform mat4 worldIT;
 uniform vec3 lightPos;
 uniform vec3 lightDir;
+uniform vec3 ambientCol;
 
 void main()
 {
@@ -28,4 +30,5 @@ void main()
 	vs_out_tex = vs_in_tex;
 	vs_out_eye_pos = lightPos;
 	vs_out_light_dir = lightDir;
+	vs_out_la = ambientCol;
 }

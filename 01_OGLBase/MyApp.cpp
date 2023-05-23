@@ -280,8 +280,21 @@ void CMyApp::Render()
 		lightDir.y += 0.005;
 	}
 
+	//ambiens feny
+	if (lightPos.x <= -15 || lightPos.z <= -15)
+	{
+		ambientCol = glm::vec3(0.2, 0.4, 1);
+	}
+	else if (lightPos.x > -15 && lightPos.x <= 5)
+	{
+		ambientCol = glm::vec3(1, 1, 1);
+	}
+	else
+	{
+		ambientCol = glm::vec3(1, 0.2, 0.2);
+	}
 	/* TALAJ */
-	floor.Render(&m_program, viewProj, lightPos, lightDir);
+	floor.Render(&m_program, viewProj, lightPos, lightDir, ambientCol);
 
 	ImGui::ShowTestWindow();
 }

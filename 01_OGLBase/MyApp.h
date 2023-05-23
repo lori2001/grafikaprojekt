@@ -90,6 +90,7 @@ protected:
 	//a napnak a pozicioja es az iranya
 	glm::vec3 lightPos = glm::vec3(-25, 5, -25);
 	glm::vec3 lightDir = glm::vec3(25, -5, 25);
+	glm::vec3 ambientCol = glm::vec3(1, 1, 1);
 
 	// a jobb olvashatóság kedvéért
 	void InitShaders();
