@@ -219,10 +219,7 @@ bool CMyApp::Init()
 
 	// Talaj
 	floor.Init();
-
-
-	// mesh betöltése
-	
+	// Kövek
 	rocks.Init();
 
 	// kamera
@@ -253,7 +250,7 @@ void CMyApp::Render()
 	// töröljük a frampuffert (GL_COLOR_BUFFER_BIT) és a mélységi Z puffert (GL_DEPTH_BUFFER_BIT)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 viewProj = m_camera.GetViewProj();
+	const glm::mat4 viewProj = m_camera.GetViewProj();
 
 	if (lightPos.x >= 25 || lightPos.z >= 25)
 	{
@@ -291,22 +288,15 @@ void CMyApp::Render()
 		ambientCol = glm::vec3(1, 1, 1);
 	}
 	else
+	{
+		ambientCol = glm::vec3(1, 0.2, 0.2);
+	}
+
 	// Kövek
 	m_program.Use();
 	rocks.Render(&m_program, viewProj);
 	
-	// kockák
-	//m_program.Use(); nem hívjuk meg újra, hisz ugyanazt a shadert használják
-	m_CubeVao.Bind();
-	m_program.SetTexture("texImage", 0, m_woodTexture);
-	glm::mat4 cubeWorld;
-
-	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
-	for (int i = 0; i < 10; ++i)
-	{
-		ambientCol = glm::vec3(1, 0.2, 0.2);
-	}
-	/* TALAJ */
+	// TALAJ
 	floor.Render(&m_program, viewProj, lightPos, lightDir, ambientCol);
 
 	ImGui::ShowTestWindow();

@@ -50,7 +50,7 @@ bool SavannaFloor::Init()
 
 void SavannaFloor::Render(ProgramObject* m_program, glm::mat4 viewProj, glm::vec3 lightPos, glm::vec3 lightDir, glm::vec3 ambientCol)
 {
-	m_program->Use();
+	// m_program->Use();
 
 	m_FloorVao.Bind();
 	m_program->SetTexture("texImage", 0, m_floorTexture);

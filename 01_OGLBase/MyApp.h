@@ -85,7 +85,6 @@ protected:
 
 	// mesh adatok
 	Rocks rocks;
-
 	SavannaFloor floor;
 
 	//a napnak a pozicioja es az iranya
