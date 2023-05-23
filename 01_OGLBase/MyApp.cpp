@@ -254,8 +254,34 @@ void CMyApp::Render()
 
 	glm::mat4 viewProj = m_camera.GetViewProj();
 
+	if (lightPos.x >= 25 || lightPos.z >= 25)
+	{
+		lightPos.x = -25;
+		lightPos.z = -25;
+		lightPos.y = 5;
+		lightDir.x = 25;
+		lightDir.z = 25;
+		lightDir.y = -5;
+	}
+	// 25 / 500 => (x + 5) / 500
+	lightPos.x += 0.05;
+	lightPos.z += 0.05;
+	lightDir.x -= 0.05;
+	lightDir.z -= 0.05;
+
+	if (lightPos.x <= 0 || lightPos.z <= 0)
+	{
+		lightPos.y += 0.005; // itt meg /10
+		lightDir.y -= 0.005;
+	}
+	else
+	{
+		lightPos.y -= 0.005;
+		lightDir.y += 0.005;
+	}
+
 	/* TALAJ */
-	floor.Render(&m_program, viewProj);
+	floor.Render(&m_program, viewProj, lightPos, lightDir);
 
 	ImGui::ShowTestWindow();
 }

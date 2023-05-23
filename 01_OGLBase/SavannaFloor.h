@@ -14,7 +14,7 @@ public:
 	~SavannaFloor();
 
 	bool Init();
-	void Render(ProgramObject*, glm::mat4);
+	void Render(ProgramObject*, glm::mat4, glm::vec3, glm::vec3);
 
 private:
 	VertexArrayObject	m_FloorVao;			// VAO

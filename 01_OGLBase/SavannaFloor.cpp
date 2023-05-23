@@ -48,7 +48,7 @@ bool SavannaFloor::Init()
 	return true;
 }
 
-void SavannaFloor::Render(ProgramObject* m_program, glm::mat4 viewProj)
+void SavannaFloor::Render(ProgramObject* m_program, glm::mat4 viewProj, glm::vec3 lightPos, glm::vec3 lightDir)
 {
 	m_program->Use();
 
@@ -58,6 +58,8 @@ void SavannaFloor::Render(ProgramObject* m_program, glm::mat4 viewProj)
 
 	m_program->SetUniform("MVP", viewProj * floor);
 	m_program->SetUniform("world", floor);
+	m_program->SetUniform("lightPos", lightPos);
+	m_program->SetUniform("lightDir", lightDir);
 	m_program->SetUniform("worldIT", glm::inverse(glm::transpose(floor)));
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
 

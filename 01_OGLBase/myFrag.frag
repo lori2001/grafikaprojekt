@@ -4,12 +4,14 @@
 in vec3 vs_out_pos;
 in vec3 vs_out_norm;
 in vec2 vs_out_tex;
+in vec3 vs_out_eye_pos;
+in vec3 vs_out_light_dir;
 
 // kimenő érték - a fragment színe
 out vec4 fs_out_col;
 
 // irány fényforrás: fény iránya
-uniform vec3 light_dir = vec3(-1,-1,-1);
+//uniform vec3 light_dir = vec3(-1, -1, -1);
 
 // fénytulajdonságok: ambiens, diffúz, spekuláris
 uniform vec3 La = vec3(0.4, 0.4, 0.4);
@@ -21,7 +23,7 @@ uniform vec3 Ka = vec3(0.2, 0.4, 0.6);
 uniform vec3 Kd = vec3(0.2, 0.4, 0.6);
 uniform vec3 Ks = vec3(0.4, 0.8, 1.0);
 
-uniform vec3 eye = vec3(1, 1, 1);
+//uniform vec3 eye = vec3(1, 1, 1);
 
 uniform sampler2D texImage;
 
@@ -42,7 +44,7 @@ void main()
 	    - clamp: http://www.opengl.org/sdk/docs/manglsl/xhtml/clamp.xml
 	*/
 
-	vec3 to_light = normalize(-light_dir);
+	vec3 to_light = normalize(-vs_out_light_dir);
 	float di = clamp(dot(to_light, vs_out_norm), 0.0, 1.0);
 	vec3 diffuse = di * Ld * Ld;
 
@@ -56,9 +58,9 @@ void main()
 				pow(alap, kitevő);
 	*/
 	
-	vec3 e = normalize(eye - vs_out_pos);
-	vec3 r = normalize(reflect(light_dir, vs_out_norm));
-	float si = pow(clamp(dot(e, r), 0.0, 1.0), 2);
+	vec3 e = normalize(vs_out_eye_pos - vs_out_pos);
+	vec3 r = normalize(reflect(vs_out_light_dir, vs_out_norm));
+	float si = pow(clamp(dot(e, r), 0.0, 1.0), 5);
 	vec3 specular = si * Ls * Ks;
 	
 	//
