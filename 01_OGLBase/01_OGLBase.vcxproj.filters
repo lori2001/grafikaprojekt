@@ -72,6 +72,9 @@
     <ClInclude Include="Includes\GLDebugMessageCallback.h">
       <Filter>GL utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Rocks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="SavannaFloor.h">
       <Filter>Header Files</Filter>
     </ClInclude>

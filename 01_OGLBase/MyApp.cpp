@@ -12,7 +12,6 @@
 CMyApp::CMyApp(void)
 {
 	m_camera.SetView(glm::vec3(5, 5, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	m_mesh = nullptr;
 }
 
 CMyApp::~CMyApp(void)
@@ -224,6 +223,8 @@ bool CMyApp::Init()
 
 	// mesh betöltése
 	
+	rocks.Init();
+
 	// kamera
 	m_camera.SetProj(glm::radians(60.0f), 640.0f / 480.0f, 0.01f, 1000.0f);
 
@@ -290,6 +291,18 @@ void CMyApp::Render()
 		ambientCol = glm::vec3(1, 1, 1);
 	}
 	else
+	// Kövek
+	m_program.Use();
+	rocks.Render(&m_program, viewProj);
+	
+	// kockák
+	//m_program.Use(); nem hívjuk meg újra, hisz ugyanazt a shadert használják
+	m_CubeVao.Bind();
+	m_program.SetTexture("texImage", 0, m_woodTexture);
+	glm::mat4 cubeWorld;
+
+	float time = SDL_GetTicks() / 1000.0f * 2 * float(M_PI) / 10;
+	for (int i = 0; i < 10; ++i)
 	{
 		ambientCol = glm::vec3(1, 0.2, 0.2);
 	}

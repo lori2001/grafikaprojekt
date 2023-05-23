@@ -25,6 +25,8 @@
 // mesh
 #include "includes/ObjParser_OGL3.h"
 
+#include "Rocks.h"
+
 
 #include "SavannaFloor.h"
 
@@ -64,7 +66,6 @@ protected:
 	gCamera				m_camera;
 
 	Texture2D			m_woodTexture;
-	Texture2D			m_suzanneTexture;
 	TextureCubeMap		m_skyboxTexture;
 
 
@@ -83,7 +84,7 @@ protected:
 
 
 	// mesh adatok
-	std::unique_ptr<Mesh> m_mesh;
+	Rocks rocks;
 
 	SavannaFloor floor;
 
